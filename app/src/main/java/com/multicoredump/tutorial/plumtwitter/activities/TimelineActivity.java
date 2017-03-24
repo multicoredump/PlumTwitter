@@ -4,6 +4,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,38 +18,47 @@ import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBinding;
+import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
+import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtility;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by radhikak on 3/23/17.
  */
 
-public class TimelineActivity extends AppCompatActivity {
+public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener {
 
+    private static final String TAG = TimelineActivity.class.getName();
+    
     private TwitterRestClient client;
 
-    ArrayList<Tweet> mTweetList;
-    private TweetAdapter mAdapter;
-    EndlessRecyclerViewScrollListener scrollListener;
+    ArrayList<Tweet> tweets;
+    private TweetAdapter tweetAdapter;
+    EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
     LinearLayoutManager mLayoutManager;
 
     private ActivityTimelineBinding binding;
 
-    private String TAG = "TimelineActivity";
+    @BindView(R.id.rvTweets) RecyclerView rvTweets;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
+        ButterKnife.bind(this);
         client = PlumTwitterApplication.getTwitterClient();
         //Setting toolbar
         setSupportActionBar(binding.toolbar);
@@ -57,16 +68,20 @@ public class TimelineActivity extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.twitter_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        mTweetList = new ArrayList<>();
-        mAdapter = new TweetAdapter(this, mTweetList);
-        binding.rView.setAdapter(mAdapter);
-        binding.rView.setItemAnimator(new DefaultItemAnimator());
-
+        tweets = new ArrayList<>();
+        tweetAdapter = new TweetAdapter(tweets);
+        rvTweets.setAdapter(tweetAdapter);
+        rvTweets.setItemAnimator(new DefaultItemAnimator());
         mLayoutManager = new LinearLayoutManager(this);
-        binding.rView.setLayoutManager(mLayoutManager);
+        rvTweets.setLayoutManager(mLayoutManager);
 
-        //Endless pagination
-        scrollListener = new EndlessRecyclerViewScrollListener(mLayoutManager) {
+//        //Recylerview decorater
+//        RecyclerView.ItemDecoration itemDecoration =
+//                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+//        rvTweets.addItemDecoration(itemDecoration);
+
+        //Endless Scroll listener
+        endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(mLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 //Handle fetching in a thread with delay to avoid error "API Limit reached" = 429
@@ -80,26 +95,27 @@ public class TimelineActivity extends AppCompatActivity {
                 }, 1000);
             }
         };
-        binding.rView.addOnScrollListener(scrollListener);
+        rvTweets.addOnScrollListener(endlessRecyclerViewScrollListener);
 
         //Swipe to refresh
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(!NetworkUtility.isOnline()) {
+                    Snackbar.make(binding.cLayout, "Check your internet Connection", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
 
-        // Attach FAB listener
+                populateTimeline(true, 0);
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.postTweet("Hello", new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-
-                    }
-                });
+                ComposeFragment composeFragment = ComposeFragment.newInstance(null);
+                composeFragment.show(TimelineActivity.this.getSupportFragmentManager(),"");
             }
         });
 
@@ -107,27 +123,36 @@ public class TimelineActivity extends AppCompatActivity {
         populateTimeline(true, 0);
     }
 
-    private long getMaxId(){
-        return mTweetList.get(mTweetList.size()-1).getUid();
+    private long getMaxId() {
+        return tweets.get(tweets.size() - 1).getUid();
     }
 
-    private void populateTimeline(final Boolean fRequest, long id) {
+    private void populateTimeline(final Boolean subsequent, long id) {
 
-        client.getHomeTimeline(fRequest, id, new JsonHttpResponseHandler(){
+        client.getHomeTimeline(subsequent, id, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d(TAG, String.valueOf(statusCode));
                 Log.d(TAG, response.toString());
-                if(fRequest)
-                    mTweetList.clear();
-                mTweetList.addAll(Tweet.fromJSONArray(response));
-                mAdapter.notifyDataSetChanged();
+
+                swipeRefreshLayout.setRefreshing(false);
+                if(subsequent) {
+                    tweets.clear();
+                }
+                tweets.addAll(Tweet.fromJSONArray(response));
+                tweetAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
                 super.onFailure(statusCode, headers, throwable, object);
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    @Override
+    public void onSuccess(Tweet tweet) {
+        // insert this at front
+        Log.d(TAG, tweet.toString());
     }
 }

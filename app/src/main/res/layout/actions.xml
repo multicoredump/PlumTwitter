@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:weightSum="4"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:id="@+id/reply"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/ibReply"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/reply"
+            android:background="@android:color/transparent"
+            android:alpha="0.5"
+            android:layout_marginRight="5dp"/>
+
+        <TextView
+            android:id="@+id/tvReplyCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ibReply"
+            tools:text="5"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/retweet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/ibRetweet"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/retweet"
+            android:background="@android:color/transparent"
+            android:alpha="0.5"
+            android:layout_marginRight="5dp"/>
+
+        <TextView
+            android:id="@+id/tvRetweetCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ibRetweet"
+            tools:text="5"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/favorite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/ibFacvorite"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/heart"
+            android:background="@android:color/transparent"
+            android:alpha="0.5"
+            android:layout_marginRight="5dp"/>
+
+        <TextView
+            android:id="@+id/tvFacvoriteCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ibFacvorite"
+            tools:text="5"/>
+    </RelativeLayout>
+
+</LinearLayout>

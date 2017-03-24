@@ -23,13 +23,20 @@
             app:contentInsetLeft="20dp"
             app:contentInsetStart="20dp" />
 
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_below="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/rView"
+                android:id="@+id/rvTweets"
                 android:layout_below="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical" >
             </android.support.v7.widget.RecyclerView>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         </RelativeLayout>
 
@@ -40,7 +47,7 @@
             android:layout_gravity="bottom|right"
             android:layout_margin="16dp"
             android:src="@drawable/quill"
-            app:layout_anchor="@id/rView"
+            app:layout_anchor="@id/rvTweets"
             app:layout_anchorGravity="bottom|right|end" />
     </android.support.design.widget.CoordinatorLayout>
 </layout>
