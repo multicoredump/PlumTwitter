@@ -98,7 +98,7 @@ public class ComposeFragment extends DialogFragment {
 
         // load profile image
         Glide.with(getActivity())
-                .load(user.getProfileImageURL())
+                .load(user.getProfileOriginalImageURL())
                 .into(ivProfile);
 
         // Update char count

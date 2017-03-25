@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -138,7 +137,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         client.getHomeTimeline(subsequent, id, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d(TAG, response.toString());
 
                 swipeRefreshLayout.setRefreshing(false);
                 if(subsequent) {
@@ -182,7 +180,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         client.getCurrentUser(new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d(TAG, response.toString());
                 currentUser = User.fromJson(response);
             }
 

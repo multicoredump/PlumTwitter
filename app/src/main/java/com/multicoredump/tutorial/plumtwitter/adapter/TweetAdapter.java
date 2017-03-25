@@ -2,6 +2,7 @@ package com.multicoredump.tutorial.plumtwitter.adapter;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +28,9 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
  * Created by radhikak on 3/23/17.
  */
 
-public class TweetAdapter extends
-        RecyclerView.Adapter<TweetAdapter.TweetViewHolder> {
+public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHolder> {
 
+    private static final String TAG = TweetAdapter.class.getName();
     private List<Tweet> tweets;
 
     public class TweetViewHolder extends RecyclerView.ViewHolder {
@@ -66,9 +67,11 @@ public class TweetAdapter extends
     public void onBindViewHolder(final TweetViewHolder holder, int position) {
         final Tweet tweet = tweets.get(position);
 
+        Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileOriginalImageURL());
+
         if (tweet != null) {
             Glide.with(holder.itemView.getContext())
-                    .load(tweet.getUser().getProfileImageURL())
+                    .load(tweet.getUser().getProfileOriginalImageURL())
                     .bitmapTransform(new RoundedCornersTransformation(holder.itemView.getContext(), 5, 0))
                     .into(holder.ivProfile);
 

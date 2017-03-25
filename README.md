@@ -46,6 +46,7 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Char counter shows negative numbers in RED and also disables Tweet button unless remaining count >= 0
+* [x] Replace Normal profile image URLs with Original Image URLs to show high quality images.
 
 ## Video Walkthrough
 

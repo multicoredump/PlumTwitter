@@ -29,8 +29,12 @@ public class User {
         return screenName;
     }
 
-    public String getProfileImageURL() {
+    public String getProfileNormalImageURL() {
         return profileImageURL;
+    }
+
+    public String getProfileOriginalImageURL() {
+        return profileImageURL.replace("_normal", "");
     }
 
     public Boolean isVerified() {
