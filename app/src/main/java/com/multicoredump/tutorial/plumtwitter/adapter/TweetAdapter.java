@@ -6,14 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
-import com.multicoredump.tutorial.plumtwitter.twitter.OnTweetActionListerner;
 import com.multicoredump.tutorial.plumtwitter.utils.DateFormatting;
 import com.multicoredump.tutorial.plumtwitter.utils.PatternEditableBuilder;
 
@@ -32,10 +30,7 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHolder> {
 
     private static final String TAG = TweetAdapter.class.getName();
-
     private List<Tweet> tweets;
-
-    private OnTweetActionListerner listerner;
 
     public class TweetViewHolder extends RecyclerView.ViewHolder {
 
@@ -49,22 +44,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
         @BindView(R.id.tvRetweetCount) TextView tvRetweetCount;
 
-        @BindView(R.id.ibFavorite)
-        ImageButton ibFavorite;
-
-        @BindView(R.id.ibRetweet) ImageButton ibRetweet;
-
         public TweetViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
     }
 
-    public TweetAdapter(ArrayList<Tweet> tweetList, OnTweetActionListerner listerner) {
+    public TweetAdapter(ArrayList<Tweet> tweetList) {
         tweets = tweetList;
-        if (listerner == null) throw new IllegalArgumentException();
-
-        this.listerner = listerner;
     }
 
     @Override
@@ -79,17 +66,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     public void onBindViewHolder(final TweetViewHolder holder, int position) {
         final Tweet tweet = tweets.get(position);
 
-        Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileImageUrl());
+        Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileBiggerImageURL());
 
         if (tweet != null) {
             Glide.with(holder.itemView.getContext())
-                    .load(tweet.getUser().getProfileImageUrl())
+                    .load(tweet.getUser().getProfileBiggerImageURL())
                     .bitmapTransform(new RoundedCornersTransformation(holder.itemView.getContext(), 5, 0))
                     .into(holder.ivProfile);
 
             holder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
             holder.tvUsername.setText(tweet.getUser().getName());
-            holder.tvBody.setText(tweet.getText());
+            holder.tvBody.setText(tweet.getBody());
             // Style clickable spans based on pattern
             new PatternEditableBuilder().
                     addPattern(Pattern.compile("\\@(\\w+)"), Color.BLUE, null)
@@ -98,7 +85,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
             holder.tvTimestamp.setText(DateFormatting.getRelativeTime(tweet.getCreatedAt()));
 
-            if (tweet.getUser().getVerified()) {
+            if (tweet.getUser().isVerified()) {
                 holder.ivVerified.setVisibility(View.VISIBLE);
             } else {
                 holder.ivVerified.setVisibility(View.INVISIBLE);
@@ -109,20 +96,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             } else {
                 holder.tvRetweetCount.setText("");
             }
-
-//            holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    listerner.onRetweet(tweet);
-//                }
-//            });
-//
-//            holder.ibFavorite.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    listerner.onFavorite(tweet);
-//                }
-//            });
 
         }
     }

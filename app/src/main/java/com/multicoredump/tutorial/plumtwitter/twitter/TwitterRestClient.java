@@ -26,8 +26,6 @@ import org.scribe.builder.api.TwitterApi;
  *
  */
 public class TwitterRestClient extends OAuthBaseClient {
-
-
     public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class;
     public static final String REST_URL = "https://api.twitter.com/1.1";
     public static final String REST_CONSUMER_KEY = "LqYEmliLgy6DkLKkykR6AdYHC";
@@ -39,13 +37,13 @@ public class TwitterRestClient extends OAuthBaseClient {
         super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
     }
 
-    public void getHomeTimeline(Boolean firstRequest, long id, AsyncHttpResponseHandler handler) {
+    public void getHomeTimeline(Boolean subsequent, long id, AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("statuses/home_timeline.json");
         RequestParams params = new RequestParams();
         params.put("count", 25);
 
         //only for subsequent requests
-        if (!firstRequest) {
+        if (!subsequent) {
             params.put("max_id", id);
         }
 
@@ -57,16 +55,6 @@ public class TwitterRestClient extends OAuthBaseClient {
         String apiUrl = getApiUrl("statuses/update.json");
         RequestParams params = new RequestParams();
         params.put("status", message);
-        getClient().post(apiUrl, params, handler);
-    }
-
-    public void postRetweet(long id, AsyncHttpResponseHandler handler) {
-
-        String url = new StringBuilder("statuses/retweet/").append(id).append(".json").toString();
-
-        String apiUrl = getApiUrl(url);
-        RequestParams params = new RequestParams();
-        params.put("id", id);
         getClient().post(apiUrl, params, handler);
     }
 
