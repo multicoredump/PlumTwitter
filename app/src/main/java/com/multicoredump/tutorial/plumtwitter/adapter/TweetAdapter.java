@@ -6,12 +6,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
+import com.multicoredump.tutorial.plumtwitter.twitter.OnTweetActionListener;
 import com.multicoredump.tutorial.plumtwitter.utils.DateFormatting;
 import com.multicoredump.tutorial.plumtwitter.utils.PatternEditableBuilder;
 
@@ -30,7 +32,10 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHolder> {
 
     private static final String TAG = TweetAdapter.class.getName();
+
     private List<Tweet> tweets;
+
+    private OnTweetActionListener listener;
 
     public class TweetViewHolder extends RecyclerView.ViewHolder {
 
@@ -44,14 +49,22 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
         @BindView(R.id.tvRetweetCount) TextView tvRetweetCount;
 
+        @BindView(R.id.ibFavorite) ImageButton ibFavorite;
+
+        @BindView(R.id.ibRetweet) ImageButton ibRetweet;
+
+
         public TweetViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
     }
 
-    public TweetAdapter(ArrayList<Tweet> tweetList) {
+    public TweetAdapter(ArrayList<Tweet> tweetList, OnTweetActionListener listener) {
         tweets = tweetList;
+        if (listener == null) throw new IllegalArgumentException("OnTweetActionListener cannot be null");
+
+        this.listener = listener;
     }
 
     @Override
@@ -76,7 +89,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
             holder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
             holder.tvUsername.setText(tweet.getUser().getName());
-            holder.tvBody.setText(tweet.getBody());
+            holder.tvBody.setText(tweet.getText());
             // Style clickable spans based on pattern
             new PatternEditableBuilder().
                     addPattern(Pattern.compile("\\@(\\w+)"), Color.BLUE, null)
@@ -96,6 +109,26 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             } else {
                 holder.tvRetweetCount.setText("");
             }
+
+            if (tweet.getFavorited()) {
+                holder.ibFavorite.setAlpha(0.9f);
+            } else {
+                holder.ibFavorite.setAlpha(0.5f);
+            }
+
+//            holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    listerner.onRetweet(tweet);
+//                }
+//            });
+//
+//            holder.ibFavorite.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    listerner.onFavorite(tweet);
+//                }
+//            });
 
         }
     }

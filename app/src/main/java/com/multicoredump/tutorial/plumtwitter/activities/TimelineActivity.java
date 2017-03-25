@@ -11,6 +11,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -21,6 +22,7 @@ import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBindin
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
+import com.multicoredump.tutorial.plumtwitter.twitter.OnTweetActionListener;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtility;
@@ -38,11 +40,11 @@ import cz.msebera.android.httpclient.Header;
  * Created by radhikak on 3/23/17.
  */
 
-public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener, OnTweetActionListener {
 
     private static final String TAG = TimelineActivity.class.getName();
 
-    private TwitterRestClient client;
+    private TwitterRestClient twitterClient;
 
     ArrayList<Tweet> tweets;
     private TweetAdapter tweetAdapter;
@@ -62,7 +64,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
         ButterKnife.bind(this);
-        client = PlumTwitterApplication.getTwitterClient();
+        twitterClient = PlumTwitterApplication.getTwitterClient();
         //Setting toolbar
         setSupportActionBar(binding.toolbar);
 
@@ -72,7 +74,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         tweets = new ArrayList<>();
-        tweetAdapter = new TweetAdapter(tweets);
+        tweetAdapter = new TweetAdapter(tweets, this);
         rvTweets.setAdapter(tweetAdapter);
         rvTweets.setItemAnimator(new DefaultItemAnimator());
         mLayoutManager = new LinearLayoutManager(this);
@@ -93,7 +95,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        populateTimeline(false, getMaxId());
+                        updateTimeline(getMaxId());
                     }
                 }, 1000);
             }
@@ -105,11 +107,11 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             @Override
             public void onRefresh() {
                 if(!NetworkUtility.isOnline()) {
-                    Snackbar.make(binding.cLayout, "Check your internet Connection", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(swipeRefreshLayout, "Check your internet Connection", Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
-                populateTimeline(true, 0);
+                updateTimeline(0);
             }
         });
 
@@ -126,21 +128,21 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getCurrentUser();
 
         //Fetch first page
-        populateTimeline(true, 0);
+        updateTimeline(0);
     }
 
     private long getMaxId() {
-        return tweets.get(tweets.size() - 1).getUid();
+        return tweets.get(tweets.size() - 1).getId();
     }
 
-    private void populateTimeline(final Boolean subsequent, long id) {
+    private void updateTimeline(final long maxId) {
 
-        client.getHomeTimeline(subsequent, id, new JsonHttpResponseHandler(){
+        twitterClient.getHomeTimeline(maxId, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
 
                 swipeRefreshLayout.setRefreshing(false);
-                if(subsequent) {
+                if(maxId == 0) {
                     tweets.clear();
                 }
                 tweets.addAll(Tweet.fromJSONArray(response));
@@ -178,7 +180,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     }
 
     private void getCurrentUser() {
-        client.getCurrentUser(new JsonHttpResponseHandler(){
+        twitterClient.getCurrentUser(new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 currentUser = User.fromJson(response);
@@ -186,8 +188,46 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-                Snackbar.make(binding.cLayout, "Error getting user info !", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(swipeRefreshLayout, "Error getting user info!", Snackbar.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void onRetweet(final Tweet tweet) {
+        twitterClient.postRetweet(tweet.getId(), new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Tweet originalTweet = Tweet.fromJson(response);
+
+                Log.d(TAG, "Contains " + tweets.contains(tweet));
+                int position = tweets.indexOf(tweet);
+                Log.d(TAG, "index: " + position);
+
+                if (position >= 0) {
+                    tweets.remove(position);
+                    tweets.add(position, originalTweet);
+
+                    tweetAdapter.notifyItemChanged(position);
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+                Snackbar.make(swipeRefreshLayout, "Error in retweeting! " + statusCode, Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onFavorite(Tweet tweet) {
+
+    }
+
+    @Override
+    public void onReply(Tweet tweet) {
+
     }
 }

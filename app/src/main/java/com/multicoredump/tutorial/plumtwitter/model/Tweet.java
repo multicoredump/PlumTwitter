@@ -14,19 +14,19 @@ import java.util.ArrayList;
 @Parcel
 public class Tweet {
 
-    private String body;
-    private long uid;
+    private String text;
+    private long id;
     private String createdAt;
     private User user;
     private Integer retweetCount;
     private Boolean favorited;
 
-    public String getBody() {
-        return body;
+    public String getText() {
+        return text;
     }
 
-    public long getUid() {
-        return uid;
+    public long getId() {
+        return id;
     }
 
     public String getCreatedAt() {
@@ -49,8 +49,8 @@ public class Tweet {
         Tweet tweet = new Tweet();
 
         try {
-            tweet.body = jsonObject.getString("text");
-            tweet.uid = jsonObject.getLong("id");
+            tweet.text = jsonObject.getString("text");
+            tweet.id = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
             tweet.retweetCount = jsonObject.getInt("retweet_count");
@@ -80,7 +80,7 @@ public class Tweet {
 
     @Override
     public String toString() {
-        return body;
+        return text;
     }
 }
 
