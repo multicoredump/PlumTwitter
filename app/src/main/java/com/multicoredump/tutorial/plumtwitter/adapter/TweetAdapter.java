@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,7 +35,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     public class TweetViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ivProfile)
-        ImageButton ivProfile;
+        ImageView ivProfile;
         @BindView(R.id.tvUsername) TextView tvUsername;
         @BindView(R.id.tvBody) TextView tvBody;
         @BindView(R.id.tvTimestamp) TextView tvTimestamp;
@@ -67,11 +66,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     public void onBindViewHolder(final TweetViewHolder holder, int position) {
         final Tweet tweet = tweets.get(position);
 
-        Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileOriginalImageURL());
+        Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileBiggerImageURL());
 
         if (tweet != null) {
             Glide.with(holder.itemView.getContext())
-                    .load(tweet.getUser().getProfileOriginalImageURL())
+                    .load(tweet.getUser().getProfileBiggerImageURL())
                     .bitmapTransform(new RoundedCornersTransformation(holder.itemView.getContext(), 5, 0))
                     .into(holder.ivProfile);
 

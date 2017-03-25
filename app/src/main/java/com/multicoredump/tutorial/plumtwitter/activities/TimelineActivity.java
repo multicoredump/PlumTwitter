@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -77,10 +78,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         mLayoutManager = new LinearLayoutManager(this);
         rvTweets.setLayoutManager(mLayoutManager);
 
-//        //Recylerview decorater
-//        RecyclerView.ItemDecoration itemDecoration =
-//                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-//        rvTweets.addItemDecoration(itemDecoration);
+        //Recylerview decorater
+        RecyclerView.ItemDecoration itemDecoration =
+                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        rvTweets.addItemDecoration(itemDecoration);
 
         //Endless Scroll listener
         endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(mLayoutManager) {

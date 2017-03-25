@@ -1,6 +1,7 @@
 package com.multicoredump.tutorial.plumtwitter.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,8 +14,6 @@ import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterRestClient> {
     private static final String TAG = LoginActivity.class.getName();
-
-//    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +64,15 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterRestClient
     // Click handler method for the button used to start OAuth flow
     // Uses the client to initiate OAuth authorization
     // This should be tied to a button used to login
-    public void loginToRest(View view) {
+    public void onSignIn(View view) {
         getClient().connect();
+    }
+
+    public void onSignUp(View view) {
+        String url = "https://twitter.com/signup";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }
 

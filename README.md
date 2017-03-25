@@ -46,7 +46,8 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Char counter shows negative numbers in RED and also disables Tweet button unless remaining count >= 0
-* [x] Replace Normal profile image URLs with Original Image URLs to show high quality images.
+* [x] Replace Normal profile image URLs with Bigger Image URLs to show high quality images.
+* [x] Added Sign Up button on first screen that takes user to browser and let them create Twitter account.
 
 ## Video Walkthrough
 

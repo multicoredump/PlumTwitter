@@ -33,8 +33,8 @@ public class User {
         return profileImageURL;
     }
 
-    public String getProfileOriginalImageURL() {
-        return profileImageURL.replace("_normal", "");
+    public String getProfileBiggerImageURL() {
+        return profileImageURL.replace("_normal", "_bigger");
     }
 
     public Boolean isVerified() {
