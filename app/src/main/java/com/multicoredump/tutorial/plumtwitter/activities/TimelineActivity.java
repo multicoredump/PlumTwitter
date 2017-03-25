@@ -156,10 +156,26 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         });
     }
 
+    JsonHttpResponseHandler postTweetHandler = new JsonHttpResponseHandler() {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            Tweet postedTweet = Tweet.fromJson(response);
+            if (postedTweet != null) {
+                tweets.add(0, postedTweet);
+                tweetAdapter.notifyItemInserted(0);
+                rvTweets.scrollToPosition(0);
+            }
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+
+        }
+    };
+
     @Override
-    public void onSuccess(Tweet tweet) {
-        // insert this at front
-        Log.d(TAG, tweet.toString());
+    public JsonHttpResponseHandler getJsonHttpResponseHandler() {
+        return postTweetHandler;
     }
 
     private void getCurrentUser() {

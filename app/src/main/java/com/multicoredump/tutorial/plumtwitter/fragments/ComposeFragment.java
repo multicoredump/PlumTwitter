@@ -1,15 +1,19 @@
 package com.multicoredump.tutorial.plumtwitter.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,23 +21,18 @@ import com.bumptech.glide.Glide;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
-import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.parceler.Parcels;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
 
 
 public class ComposeFragment extends DialogFragment {
 
     private static final String ARG_USER = "user";
+    private static final int MAX_ALLOWED_CHAR_COUNT = 140;
 
     private User user;
 
@@ -51,8 +50,11 @@ public class ComposeFragment extends DialogFragment {
     @BindView(R.id.ivProfile)
     ImageView ivProfile;
 
+    @BindView(R.id.ibCancel)
+    ImageButton ibCancel;
+
     public interface OnPostTweetListener {
-        void onSuccess(Tweet tweet);
+        JsonHttpResponseHandler getJsonHttpResponseHandler();
     }
 
     public ComposeFragment() {
@@ -70,6 +72,8 @@ public class ComposeFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // save current user
         if (getArguments() != null) {
             user = Parcels.unwrap(getArguments().getParcelable(ARG_USER));
         }
@@ -92,35 +96,60 @@ public class ComposeFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // load profile image
         Glide.with(getActivity())
                 .load(user.getProfileImageURL())
                 .into(ivProfile);
 
+        // Update char count
+        etBody.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                int remaining = MAX_ALLOWED_CHAR_COUNT - charSequence.length();
+
+                if (remaining < 0 ) {
+                    // show char count in red
+                    tvCharCount.setTextColor(Color.RED);
+                    // disable tweet button
+                    btTweet.setEnabled(false);
+                } else {
+                    tvCharCount.setTextColor(Color.DKGRAY);
+                    btTweet.setEnabled(true);
+                }
+
+                tvCharCount.setText(String.valueOf(remaining));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        // post tweet
         btTweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message = etBody.getText().toString();
 
                 if (!message.isEmpty()) {
-
-                    PlumTwitterApplication.getTwitterClient().postTweet(message, new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                            List<Tweet> tweets = Tweet.fromJSONArray(response);
-                            mListener.onSuccess(tweets.get(0));
-                        }
-
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            mListener.onSuccess(Tweet.fromJson(response));
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-
-                        }
-                    });
+                    PlumTwitterApplication.getTwitterClient().postTweet(message, mListener.getJsonHttpResponseHandler());
                 }
+                dismiss();
+            }
+        });
+
+        // cancel dialog
+        ibCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Todo save draft
                 dismiss();
             }
         });
