@@ -1,5 +1,7 @@
 package com.multicoredump.tutorial.plumtwitter.adapter;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,11 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
+import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
+import com.multicoredump.tutorial.plumtwitter.model.Media;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
-import com.multicoredump.tutorial.plumtwitter.twitter.OnTweetActionListener;
 import com.multicoredump.tutorial.plumtwitter.utils.DateFormatting;
 import com.multicoredump.tutorial.plumtwitter.utils.PatternEditableBuilder;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +29,7 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
@@ -34,8 +41,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     private static final String TAG = TweetAdapter.class.getName();
 
     private List<Tweet> tweets;
-
-    private OnTweetActionListener listener;
 
     public class TweetViewHolder extends RecyclerView.ViewHolder {
 
@@ -55,6 +60,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
         @BindView(R.id.ibRetweet) ImageButton ibRetweet;
 
+        @BindView(R.id.ivTweetImage) ImageView ivTweetImage;
+
 
         public TweetViewHolder(View view) {
             super(view);
@@ -62,11 +69,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         }
     }
 
-    public TweetAdapter(ArrayList<Tweet> tweetList, OnTweetActionListener listener) {
+    public TweetAdapter(ArrayList<Tweet> tweetList) {
         tweets = tweetList;
-        if (listener == null) throw new IllegalArgumentException("OnTweetActionListener cannot be null");
-
-        this.listener = listener;
     }
 
     @Override
@@ -80,6 +84,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     @Override
     public void onBindViewHolder(final TweetViewHolder holder, int position) {
         final Tweet tweet = tweets.get(position);
+
+        final Context context = holder.itemView.getContext();
+        final Resources resources = context.getResources();
 
         Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileBiggerImageURL());
 
@@ -112,8 +119,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 holder.tvRetweetCount.setText("");
             }
 
+            holder.ibRetweet.setColorFilter(resources.getColor(R.color.colorAccent));
+            holder.ibFavorite.setColorFilter(resources.getColor(R.color.colorHighlight));
+
+            if (tweet.isRetweeted()) {
+                holder.ibRetweet.setAlpha(1.0f);
+            } else {
+                holder.ibRetweet.setAlpha(0.5f);
+            }
+
             if (tweet.getFavorited()) {
-                holder.ibFavorite.setAlpha(0.9f);
+                holder.ibFavorite.setAlpha(1.0f);
             } else {
                 holder.ibFavorite.setAlpha(0.5f);
             }
@@ -124,19 +140,84 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 holder.tvFavoriteCount.setText("");
             }
 
-//            holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    listerner.onRetweet(tweet);
-//                }
-//            });
+            // Check if multimedia image is available
+            Media media = tweet.getMedia();
+            if (media != null && media.getImageUrl() != null) {
+                holder.ivTweetImage.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(media.getImageUrl())
+                        .bitmapTransform(new RoundedCornersTransformation(context, 10, 0))
+                        .crossFade()
+                        .into(holder.ivTweetImage);
+            } else {
+                holder.ivTweetImage.setVisibility(View.VISIBLE);
+            }
+
+            holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PlumTwitterApplication.getTwitterClient().postRetweet(tweet.getId(), new JsonHttpResponseHandler(){
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            // only change retweet count of original tweet
+
+                            Tweet retweet = Tweet.fromJson(response);
+                            holder.tvRetweetCount.setText(retweet.getRetweetCount().toString());
+                            holder.ibRetweet.setAlpha(1.0f);
+
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+                            Log.e(TAG, "Retweet action failed", throwable);
+                        }
+                    });
+                }
+            });
 //
-//            holder.ibFavorite.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    listerner.onFavorite(tweet);
-//                }
-//            });
+            holder.ibFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (tweet.getFavorited()) {
+                        PlumTwitterApplication.getTwitterClient().postFavoriteDestroy(tweet.getId(), new JsonHttpResponseHandler(){
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                // only change retweet count of original tweet
+
+                                Tweet retweet = Tweet.fromJson(response);
+                                holder.tvFavoriteCount.setText(retweet.getFavoriteCount().toString());
+                                holder.ibFavorite.setAlpha(0.5f);
+
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+                                Log.e(TAG, "Favorite action failed", throwable);
+                            }
+                        });
+                    } else {
+
+                        PlumTwitterApplication.getTwitterClient().postFavoriteCreate(tweet.getId(), new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                // only change retweet count of original tweet
+
+                                Tweet retweet = Tweet.fromJson(response);
+                                holder.tvFavoriteCount.setText(retweet.getFavoriteCount().toString());
+                                holder.ibFavorite.setAlpha(1.0f);
+
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+                                Log.e(TAG, "Favorite action failed", throwable);
+                            }
+                        });
+                    }
+
+                }
+            });
 
         }
     }

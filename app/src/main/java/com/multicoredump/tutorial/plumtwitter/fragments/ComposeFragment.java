@@ -101,6 +101,7 @@ public class ComposeFragment extends DialogFragment {
                 .load(user.getProfileBiggerImageURL())
                 .into(ivProfile);
 
+        ibCancel.setColorFilter(getResources().getColor(R.color.colorPrimary));
         // Update char count
         etBody.addTextChangedListener(new TextWatcher() {
 

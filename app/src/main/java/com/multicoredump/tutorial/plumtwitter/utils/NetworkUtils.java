@@ -6,7 +6,7 @@ import android.net.NetworkInfo;
 
 import java.io.IOException;
 
-public class NetworkUtility {
+public class NetworkUtils {
 
     public static Boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager

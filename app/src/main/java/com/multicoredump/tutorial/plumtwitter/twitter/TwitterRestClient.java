@@ -68,6 +68,22 @@ public class TwitterRestClient extends OAuthBaseClient {
         getClient().post(apiUrl, params, handler);
     }
 
+    public void postFavoriteCreate(long id, AsyncHttpResponseHandler handler) {
+
+        String apiUrl = getApiUrl("favorites/create.json");
+        RequestParams params = new RequestParams();
+        params.put("id", id);
+        getClient().post(apiUrl, params, handler);
+    }
+
+    public void postFavoriteDestroy(long id, AsyncHttpResponseHandler handler) {
+
+        String apiUrl = getApiUrl("favorites/destroy.json");
+        RequestParams params = new RequestParams();
+        params.put("id", id);
+        getClient().post(apiUrl, params, handler);
+    }
+
     // get current user info - uses
     public void getCurrentUser(AsyncHttpResponseHandler handler) {
 

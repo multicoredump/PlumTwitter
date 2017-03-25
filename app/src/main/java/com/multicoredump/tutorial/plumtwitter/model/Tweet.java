@@ -14,13 +14,17 @@ import java.util.ArrayList;
 @Parcel
 public class Tweet {
 
-    private String text;
-    private long id;
-    private String createdAt;
-    private User user;
-    private Integer retweetCount;
-    private Boolean favorited;
-    private Integer favoriteCount;
+     String text;
+     long id;
+     String createdAt;
+     User user;
+     Integer retweetCount;
+     Boolean favorited;
+     Integer favoriteCount;
+     boolean retweeted;
+
+     Media media;
+     Media extendedMedia;
 
     public String getText() {
         return text;
@@ -50,6 +54,18 @@ public class Tweet {
         return favoriteCount;
     }
 
+    public boolean isRetweeted() {
+        return retweeted;
+    }
+
+    public Media getMedia() {
+        return media;
+    }
+
+    public Media getExtendedMedia() {
+        return extendedMedia;
+    }
+
     public static Tweet fromJson(JSONObject jsonObject){
         Tweet tweet = new Tweet();
 
@@ -61,6 +77,22 @@ public class Tweet {
             tweet.retweetCount = jsonObject.getInt("retweet_count");
             tweet.favorited = jsonObject.getBoolean("favorited");
             tweet.favoriteCount = jsonObject.getInt("favorite_count");
+            tweet.retweeted = jsonObject.getBoolean("retweeted");
+
+            JSONObject mediaObj = jsonObject.getJSONObject("entities");
+            if(mediaObj.has("media")) {
+                JSONArray mediaArray = mediaObj.getJSONArray("media");
+                tweet.media = Media.fromJson(mediaArray.getJSONObject(0));
+            }
+
+            if(jsonObject.has("extended_entities")) {
+                JSONObject extMediaObj = jsonObject.getJSONObject("extended_entities");
+                if(extMediaObj.has("media")) {
+                    JSONArray extendedMediaArray = extMediaObj.getJSONArray("media");
+                    tweet.extendedMedia = Media.fromJson(extendedMediaArray.getJSONObject(0));
+                }
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

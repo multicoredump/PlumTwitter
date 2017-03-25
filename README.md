@@ -1,8 +1,8 @@
-# Project 3 - *Plum for Twitter*
+# Project 3 - *Plum Twitter*
 
-**Plum for Twitter** is an android app that allows a user to view his Twitter timeline and post a new tweet. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
+**Plum Twitter** is an android app that allows a user to view his Twitter timeline and post a new tweet. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
-Time spent: **8** hours spent in total
+Time spent: **12** hours spent in total
 
 ## User Stories
 
@@ -30,7 +30,7 @@ The following **optional** features are implemented:
 
 The following **bonus** features are implemented:
 
-* [ ] User can see embedded image media within the tweet detail view
+* [x] User can see embedded image media within the tweet
 * [ ] User can watch embedded video within the tweet
 * [x] Compose tweet functionality is build using modal overlay
 * [x] Use Parcelable instead of Serializable using the popular [Parceler library](http://guides.codepath.com/android/Using-Parceler).
@@ -49,7 +49,9 @@ The following **additional** features are implemented:
 * [x] Replace Normal profile image URLs with Bigger Image URLs to show high quality images.
 * [x] Added Sign Up button on first screen that takes user to browser and let them create Twitter account.
 * [x] Shows number of retweets
+* [x] Retweet button is actionable and it works!
 * [x] Indicates favorited tweets with favorite count
+* [x] User can favorite a tweet
 
 ## Video Walkthrough
 

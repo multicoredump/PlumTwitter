@@ -1,8 +1,10 @@
 package com.multicoredump.tutorial.plumtwitter.activities;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,10 +23,9 @@ import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBindin
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
-import com.multicoredump.tutorial.plumtwitter.twitter.OnTweetActionListener;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
-import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtility;
+import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +40,7 @@ import cz.msebera.android.httpclient.Header;
  * Created by radhikak on 3/23/17.
  */
 
-public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener, OnTweetActionListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener {
 
     private static final String TAG = TimelineActivity.class.getName();
 
@@ -57,6 +58,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
     private User currentUser = null;
 
+    Snackbar snackbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         tweets = new ArrayList<>();
-        tweetAdapter = new TweetAdapter(tweets, this);
+        tweetAdapter = new TweetAdapter(tweets);
         rvTweets.setAdapter(tweetAdapter);
         rvTweets.setItemAnimator(new DefaultItemAnimator());
         mLayoutManager = new LinearLayoutManager(this);
@@ -105,9 +108,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!NetworkUtility.isOnline()) {
-                    Snackbar.make(swipeRefreshLayout, "Check your internet Connection", Snackbar.LENGTH_LONG).show();
-                    return;
+                if(!NetworkUtils.isOnline()) {
+                    handleRequestError();
                 }
 
                 updateTimeline(0);
@@ -128,6 +130,21 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
         //Fetch first page
         updateTimeline(0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (NetworkUtils.isNetworkAvailable(this) || NetworkUtils.isOnline()) {
+            if (snackbar != null && snackbar.isShown()) {
+                snackbar.dismiss();
+                updateTimeline(0);
+            }
+
+        } else {
+            handleRequestError();
+        }
     }
 
     private long getMaxId() {
@@ -169,7 +186,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
         @Override
         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-
+            handleRequestError();
         }
     };
 
@@ -187,34 +204,22 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-                Snackbar.make(swipeRefreshLayout, "Error getting user info!", Snackbar.LENGTH_LONG).show();
+                handleRequestError();
             }
         });
     }
 
-    @Override
-    public void onRetweet(final Tweet tweet) {
-        twitterClient.postRetweet(tweet.getId(), new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // only change retweet count of original tweet
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-                Snackbar.make(swipeRefreshLayout, "Error in retweeting! " + statusCode, Snackbar.LENGTH_LONG).show();
-            }
-        });
-
-    }
-
-    @Override
-    public void onFavorite(Tweet tweet) {
-
-    }
-
-    @Override
-    public void onReply(Tweet tweet) {
-
+    private void handleRequestError() {
+        // The request was not successful hence first check if network is connected
+        if (!NetworkUtils.isNetworkAvailable(this) || !NetworkUtils.isOnline()) {
+            snackbar = Snackbar.make(swipeRefreshLayout, "Network Error. Please connect to Internet and try again", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Wi-Fi Settings", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    });
+            snackbar.show();
+        }
     }
 }

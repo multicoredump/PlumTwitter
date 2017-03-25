@@ -11,11 +11,11 @@ import org.parceler.Parcel;
 @Parcel
 public class User {
 
-    private String name;
-    private long uid;
-    private String screenName;
-    private String profileImageURL;
-    private Boolean verified;
+     String name;
+     long uid;
+     String screenName;
+     String profileImageURL;
+     Boolean verified;
 
     public String getName() {
         return name;
