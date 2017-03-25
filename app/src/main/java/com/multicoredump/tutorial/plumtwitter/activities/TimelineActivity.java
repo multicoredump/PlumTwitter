@@ -11,7 +11,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -198,19 +197,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         twitterClient.postRetweet(tweet.getId(), new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Tweet originalTweet = Tweet.fromJson(response);
-
-                Log.d(TAG, "Contains " + tweets.contains(tweet));
-                int position = tweets.indexOf(tweet);
-                Log.d(TAG, "index: " + position);
-
-                if (position >= 0) {
-                    tweets.remove(position);
-                    tweets.add(position, originalTweet);
-
-                    tweetAdapter.notifyItemChanged(position);
-                }
-
+                // only change retweet count of original tweet
             }
 
             @Override

@@ -49,6 +49,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
         @BindView(R.id.tvRetweetCount) TextView tvRetweetCount;
 
+        @BindView(R.id.tvFavoriteCount) TextView tvFavoriteCount;
+
         @BindView(R.id.ibFavorite) ImageButton ibFavorite;
 
         @BindView(R.id.ibRetweet) ImageButton ibRetweet;
@@ -114,6 +116,12 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 holder.ibFavorite.setAlpha(0.9f);
             } else {
                 holder.ibFavorite.setAlpha(0.5f);
+            }
+
+            if (tweet.getFavoriteCount() != 0) {
+                holder.tvFavoriteCount.setText(tweet.getFavoriteCount().toString());
+            } else {
+                holder.tvFavoriteCount.setText("");
             }
 
 //            holder.ibRetweet.setOnClickListener(new View.OnClickListener() {

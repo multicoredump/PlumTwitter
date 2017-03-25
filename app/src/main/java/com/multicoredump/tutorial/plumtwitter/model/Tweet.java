@@ -20,6 +20,7 @@ public class Tweet {
     private User user;
     private Integer retweetCount;
     private Boolean favorited;
+    private Integer favoriteCount;
 
     public String getText() {
         return text;
@@ -45,6 +46,10 @@ public class Tweet {
         return favorited;
     }
 
+    public Integer getFavoriteCount() {
+        return favoriteCount;
+    }
+
     public static Tweet fromJson(JSONObject jsonObject){
         Tweet tweet = new Tweet();
 
@@ -55,6 +60,7 @@ public class Tweet {
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
             tweet.retweetCount = jsonObject.getInt("retweet_count");
             tweet.favorited = jsonObject.getBoolean("favorited");
+            tweet.favoriteCount = jsonObject.getInt("favorite_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
