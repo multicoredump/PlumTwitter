@@ -20,6 +20,7 @@ import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication
 import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBinding;
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
+import com.multicoredump.tutorial.plumtwitter.model.User;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtility;
@@ -40,7 +41,7 @@ import cz.msebera.android.httpclient.Header;
 public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener {
 
     private static final String TAG = TimelineActivity.class.getName();
-    
+
     private TwitterRestClient client;
 
     ArrayList<Tweet> tweets;
@@ -52,6 +53,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
     @BindView(R.id.rvTweets) RecyclerView rvTweets;
     @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+
+    private User currentUser = null;
 
 
     @Override
@@ -114,10 +117,13 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ComposeFragment composeFragment = ComposeFragment.newInstance(null);
+                ComposeFragment composeFragment = ComposeFragment.newInstance(currentUser);
                 composeFragment.show(TimelineActivity.this.getSupportFragmentManager(),"");
             }
         });
+
+        // Get current user info
+        getCurrentUser();
 
         //Fetch first page
         populateTimeline(true, 0);
@@ -154,5 +160,20 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     public void onSuccess(Tweet tweet) {
         // insert this at front
         Log.d(TAG, tweet.toString());
+    }
+
+    private void getCurrentUser() {
+        client.getCurrentUser(new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(TAG, response.toString());
+                currentUser = User.fromJson(response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+                Snackbar.make(binding.cLayout, "Error getting user info !", Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 }

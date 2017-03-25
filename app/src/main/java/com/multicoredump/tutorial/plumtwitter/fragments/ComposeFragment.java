@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
@@ -91,9 +92,9 @@ public class ComposeFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        Glide.with(getActivity())
-//                .load(user.getProfileImageURL())
-//                .into(ivProfile);
+        Glide.with(getActivity())
+                .load(user.getProfileImageURL())
+                .into(ivProfile);
 
         btTweet.setOnClickListener(new View.OnClickListener() {
             @Override
