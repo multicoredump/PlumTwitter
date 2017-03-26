@@ -150,7 +150,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                         .crossFade()
                         .into(holder.ivTweetImage);
             } else {
-                holder.ivTweetImage.setVisibility(View.VISIBLE);
+                holder.ivTweetImage.setVisibility(View.GONE);
             }
 
             holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
