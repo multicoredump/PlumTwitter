@@ -1,7 +1,6 @@
 package com.multicoredump.tutorial.plumtwitter.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -68,12 +67,12 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterRestClient
         getClient().connect();
     }
 
-    public void onSignUp(View view) {
-        String url = "https://twitter.com/signup";
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        startActivity(i);
-    }
+//    public void onSignUp(View view) {
+//        String url = "https://twitter.com/signup";
+//        Intent i = new Intent(Intent.ACTION_VIEW);
+//        i.setData(Uri.parse(url));
+//        startActivity(i);
+//    }
 }
 
 

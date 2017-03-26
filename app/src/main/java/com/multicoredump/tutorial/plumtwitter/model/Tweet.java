@@ -1,5 +1,11 @@
 package com.multicoredump.tutorial.plumtwitter.model;
 
+import com.multicoredump.tutorial.plumtwitter.db.PlumTwitterDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,20 +17,39 @@ import java.util.ArrayList;
  * Created by radhikak on 3/23/17.
  */
 
+@Table(database = PlumTwitterDatabase.class)
 @Parcel
 public class Tweet {
 
+    @Column
      String text;
+
+    @Column
+    @PrimaryKey
      long id;
+
+    @Column
      String createdAt;
+
+    @Column
+    @ForeignKey(saveForeignKeyModel = true)
      User user;
+
+    @Column
      Integer retweetCount;
+
+    @Column
      Boolean favorited;
+
+    @Column
      Integer favoriteCount;
+
+    @Column
      boolean retweeted;
 
+    @Column
+    @ForeignKey(saveForeignKeyModel = true)
      Media media;
-     Media extendedMedia;
 
     public String getText() {
         return text;
@@ -62,10 +87,6 @@ public class Tweet {
         return media;
     }
 
-    public Media getExtendedMedia() {
-        return extendedMedia;
-    }
-
     public static Tweet fromJson(JSONObject jsonObject){
         Tweet tweet = new Tweet();
 
@@ -79,18 +100,10 @@ public class Tweet {
             tweet.favoriteCount = jsonObject.getInt("favorite_count");
             tweet.retweeted = jsonObject.getBoolean("retweeted");
 
-            JSONObject mediaObj = jsonObject.getJSONObject("entities");
-            if(mediaObj.has("media")) {
-                JSONArray mediaArray = mediaObj.getJSONArray("media");
+            JSONObject jsonMediaObj = jsonObject.getJSONObject("entities");
+            if(jsonMediaObj.has("media")) {
+                JSONArray mediaArray = jsonMediaObj.getJSONArray("media");
                 tweet.media = Media.fromJson(mediaArray.getJSONObject(0));
-            }
-
-            if(jsonObject.has("extended_entities")) {
-                JSONObject extMediaObj = jsonObject.getJSONObject("extended_entities");
-                if(extMediaObj.has("media")) {
-                    JSONArray extendedMediaArray = extMediaObj.getJSONArray("media");
-                    tweet.extendedMedia = Media.fromJson(extendedMediaArray.getJSONObject(0));
-                }
             }
 
         } catch (JSONException e) {
