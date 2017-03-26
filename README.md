@@ -2,7 +2,7 @@
 
 **Plum Twitter** is an android app that allows a user to view his Twitter timeline and post a new tweet. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
-Time spent: **13** hours spent in total
+Time spent: **14** hours spent in total
 
 ## User Stories
 
@@ -26,7 +26,7 @@ The following **optional** features are implemented:
 * [x] User can **pull down to refresh tweets timeline**
 * [ ] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 * [ ] User can tap a tweet to **open a detailed tweet view**
-* [ ] User can **select "reply" from detail view to respond to a tweet**
+* [x] User can **select "reply" from timeline view to respond to a tweet**
 
 The following **bonus** features are implemented:
 
@@ -45,12 +45,12 @@ The following **bonus** features are implemented:
 
 The following **additional** features are implemented:
 
-* [x] Char counter shows negative numbers in RED and also disables Tweet button unless remaining count >= 0
-* [x] Replace Normal profile image URLs with Bigger Image URLs to show high quality images.
-* [x] Shows number of retweets
-* [x] User can retweet a tweet
-* [x] Indicates favorited tweets with favorite count
-* [x] User can favorite a tweet
+* [x] Char counter shows negative numbers in **RED and also disables Tweet button** unless remaining count >= 0
+* [x] Replace Normal profile image URLs with **Bigger Image URLs to show high quality images**.
+* [x] Timeline view shows **number of retweets**
+* [x] Timeline view indicates **favorited tweets with favorite count**
+* [x] User can **select "retweet" from timeline view to re-tweet to a tweet**
+* [x] User can **select "Favorite" from timeline view to favorite to a tweet**
 
 ## Video Walkthrough
 

@@ -18,6 +18,7 @@ import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Media;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
+import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
 import com.multicoredump.tutorial.plumtwitter.utils.DateFormatting;
 import com.multicoredump.tutorial.plumtwitter.utils.PatternEditableBuilder;
 
@@ -42,6 +43,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
     private List<Tweet> tweets;
 
+    private OnReplyActionListener onReplyActionListener;
+
     public class TweetViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ivProfile)
@@ -57,8 +60,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         @BindView(R.id.tvFavoriteCount) TextView tvFavoriteCount;
 
         @BindView(R.id.ibFavorite) ImageButton ibFavorite;
-
         @BindView(R.id.ibRetweet) ImageButton ibRetweet;
+        @BindView(R.id.ibReply) ImageButton ibReply;
 
         @BindView(R.id.ivTweetImage) ImageView ivTweetImage;
 
@@ -69,8 +72,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         }
     }
 
-    public TweetAdapter(ArrayList<Tweet> tweetList) {
+    public TweetAdapter(ArrayList<Tweet> tweetList, OnReplyActionListener listener) {
         tweets = tweetList;
+
+        if (listener == null) throw new IllegalArgumentException("OnReplyActionListener cannot be null!!");
+        onReplyActionListener = listener;
     }
 
     @Override
@@ -119,6 +125,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 holder.tvRetweetCount.setText("");
             }
 
+            holder.ibReply.setColorFilter(resources.getColor(R.color.colorPrimary));
             holder.ibRetweet.setColorFilter(resources.getColor(R.color.colorAccent));
             holder.ibFavorite.setColorFilter(resources.getColor(R.color.colorHighlight));
 
@@ -216,6 +223,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                         });
                     }
 
+                }
+            });
+
+
+            holder.ibReply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onReplyActionListener.onReply(tweet);
                 }
             });
 

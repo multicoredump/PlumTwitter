@@ -23,6 +23,7 @@ import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBindin
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
+import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
@@ -40,7 +41,7 @@ import cz.msebera.android.httpclient.Header;
  * Created by radhikak on 3/23/17.
  */
 
-public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener, OnReplyActionListener {
 
     private static final String TAG = TimelineActivity.class.getName();
 
@@ -76,7 +77,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         tweets = new ArrayList<>();
-        tweetAdapter = new TweetAdapter(tweets);
+        tweetAdapter = new TweetAdapter(tweets, this);
         rvTweets.setAdapter(tweetAdapter);
         rvTweets.setItemAnimator(new DefaultItemAnimator());
         mLayoutManager = new LinearLayoutManager(this);
@@ -120,8 +121,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ComposeFragment composeFragment = ComposeFragment.newInstance(currentUser);
-                composeFragment.show(TimelineActivity.this.getSupportFragmentManager(),"");
+                ComposeFragment composeFragment = ComposeFragment.newInstance(currentUser, null);
+                composeFragment.show(TimelineActivity.this.getSupportFragmentManager(), "compose");
             }
         });
 
@@ -193,6 +194,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     @Override
     public JsonHttpResponseHandler getJsonHttpResponseHandler() {
         return postTweetHandler;
+    }
+
+    @Override
+    public void onReply(final Tweet tweet) {
+        ComposeFragment composeFragment = ComposeFragment.newInstance(currentUser, tweet.getUser());
+        composeFragment.show(TimelineActivity.this.getSupportFragmentManager(), "reply");
     }
 
     private void getCurrentUser() {

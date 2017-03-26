@@ -32,9 +32,12 @@ import butterknife.ButterKnife;
 public class ComposeFragment extends DialogFragment {
 
     private static final String ARG_USER = "user";
+    private static final String ARG_REPLY_TO_USER = "replyToUser";
+
     private static final int MAX_ALLOWED_CHAR_COUNT = 140;
 
     private User user;
+    private User replyToUser;
 
     private OnPostTweetListener mListener;
 
@@ -61,11 +64,14 @@ public class ComposeFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static ComposeFragment newInstance(User user) {
+    public static ComposeFragment newInstance(User user, User replyToUser) {
         ComposeFragment fragment = new ComposeFragment();
+
         Bundle args = new Bundle();
         args.putParcelable(ARG_USER, Parcels.wrap(user));
+        args.putParcelable(ARG_REPLY_TO_USER, Parcels.wrap(replyToUser));
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -76,6 +82,7 @@ public class ComposeFragment extends DialogFragment {
         // save current user
         if (getArguments() != null) {
             user = Parcels.unwrap(getArguments().getParcelable(ARG_USER));
+            replyToUser = Parcels.unwrap(getArguments().getParcelable(ARG_REPLY_TO_USER));
         }
     }
 
@@ -102,6 +109,13 @@ public class ComposeFragment extends DialogFragment {
                 .into(ivProfile);
 
         ibCancel.setColorFilter(getResources().getColor(R.color.colorPrimary));
+
+        // add user screenname for reply 
+        if (replyToUser != null) {
+            etBody.setText(String.format("@%s ", replyToUser.getScreenName()));
+            etBody.setSelection(etBody.getText().toString().length());
+        }
+
         // Update char count
         etBody.addTextChangedListener(new TextWatcher() {
 
