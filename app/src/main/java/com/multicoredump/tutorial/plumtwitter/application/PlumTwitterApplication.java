@@ -28,4 +28,8 @@ public class PlumTwitterApplication extends Application {
     public static TwitterRestClient getTwitterClient() {
         return (TwitterRestClient) TwitterRestClient.getInstance(TwitterRestClient.class, PlumTwitterApplication.context);
     }
+
+    public static Context getContext() {
+        return context;
+    }
 }

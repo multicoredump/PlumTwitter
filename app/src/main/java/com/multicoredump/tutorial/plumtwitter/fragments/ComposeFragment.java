@@ -110,7 +110,7 @@ public class ComposeFragment extends DialogFragment {
 
         ibCancel.setColorFilter(getResources().getColor(R.color.colorPrimary));
 
-        // add user screenname for reply 
+        // add user screenname for reply
         if (replyToUser != null) {
             etBody.setText(String.format("@%s ", replyToUser.getScreenName()));
             etBody.setSelection(etBody.getText().toString().length());
