@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 
@@ -50,7 +51,7 @@ public class UserTimelineFragment extends BaseTimelineTabFragment {
 
     @Override
     public int getTabPosition() {
-        return 0;
+        return PlumTwitterApplication.USER_TWEETS_TAB_POSITION;
     }
 
     @Override

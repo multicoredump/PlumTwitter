@@ -37,7 +37,9 @@ import cz.msebera.android.httpclient.Header;
  * Created by radhikak on 3/23/17.
  */
 
-public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener, OnReplyActionListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener,
+        OnReplyActionListener,
+        BaseTimelineTabFragment.TwitterCurrentUserProvider {
 
     private static final String TAG = TimelineActivity.class.getName();
 
@@ -69,7 +71,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setLogo(R.drawable.twitter_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        timelineFragment = TimelineFragment.newInstance();
+        timelineFragment = new TimelineFragment();
         mentionsFragment = new MentionsFragment();
         fragments.add(timelineFragment.getTabPosition(), timelineFragment);
         fragments.add(mentionsFragment.getTabPosition(), mentionsFragment);
@@ -89,7 +91,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         });
 
         // Get current user info
-        getCurrentUser();
+        loadCurrentUser();
     }
 
     @Override
@@ -152,7 +154,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         composeFragment.show(TimelineActivity.this.getSupportFragmentManager(), "reply");
     }
 
-    private void getCurrentUser() {
+    private void loadCurrentUser() {
         PlumTwitterApplication.getTwitterClient().getCurrentUser(new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -180,9 +182,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         }
     }
 
-
     // To save tab position
-
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(PAGER_INDEX, binding.slidingTabs.getSelectedTabPosition());
@@ -192,5 +192,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         binding.viewpager.setCurrentItem(savedInstanceState.getInt(PAGER_INDEX));
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

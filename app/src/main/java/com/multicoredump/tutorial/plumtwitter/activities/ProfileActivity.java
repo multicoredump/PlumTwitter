@@ -14,7 +14,7 @@ import com.multicoredump.tutorial.plumtwitter.adapter.TweetFragmentPagerAdapater
 import com.multicoredump.tutorial.plumtwitter.databinding.ActivityProfileBinding;
 import com.multicoredump.tutorial.plumtwitter.fragments.BaseTimelineTabFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
-import com.multicoredump.tutorial.plumtwitter.fragments.FavoritesFragment;
+import com.multicoredump.tutorial.plumtwitter.fragments.LikesFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.UserTimelineFragment;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 
@@ -26,7 +26,8 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ProfileActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener{
+public class ProfileActivity extends AppCompatActivity implements ComposeFragment.OnPostTweetListener,
+        BaseTimelineTabFragment.TwitterCurrentUserProvider{
 
     private static final String TAG = ProfileActivity.class.getName();
     private static String PAGER_INDEX = "Pager_Index";
@@ -85,7 +86,7 @@ public class ProfileActivity extends AppCompatActivity implements ComposeFragmen
         // Set up fragments and view pager
         List<BaseTimelineTabFragment> fragments = new ArrayList<>();
         BaseTimelineTabFragment userTimelineFragment = UserTimelineFragment.newInstance(user);
-        BaseTimelineTabFragment favoritesFragment = FavoritesFragment.newInstance(user);
+        BaseTimelineTabFragment favoritesFragment = LikesFragment.newInstance(user);
 
         fragments.add(userTimelineFragment.getTabPosition(), userTimelineFragment);
         fragments.add(favoritesFragment.getTabPosition(), favoritesFragment);
@@ -127,6 +128,11 @@ public class ProfileActivity extends AppCompatActivity implements ComposeFragmen
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
             }
         };
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return user;
     }
 
     private class ProfilePagerAdapter extends TweetFragmentPagerAdapater {

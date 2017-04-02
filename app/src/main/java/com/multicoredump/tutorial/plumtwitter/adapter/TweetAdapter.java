@@ -57,7 +57,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         @BindView(R.id.tvBody) TextView tvBody;
         @BindView(R.id.tvTimestamp) TextView tvTimestamp;
         @BindView(R.id.tvScreenName) TextView tvScreenName;
-        @BindView(R.id.ivVerified) ImageView ivVerified;
+//        @BindView(R.id.ivVerified) ImageView ivVerified;
 
         @BindView(R.id.tvRetweetCount) TextView tvRetweetCount;
 
@@ -115,11 +115,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
 
             holder.tvTimestamp.setText(DateFormatting.getRelativeTime(tweet.getCreatedAt()));
 
-            if (tweet.getUser().isVerified()) {
-                holder.ivVerified.setVisibility(View.VISIBLE);
-            } else {
-                holder.ivVerified.setVisibility(View.INVISIBLE);
-            }
+//            if (tweet.getUser().isVerified()) {
+//                holder.ivVerified.setVisibility(View.VISIBLE);
+//            } else {
+//                holder.ivVerified.setVisibility(View.INVISIBLE);
+//            }
 
             if (tweet.getRetweetCount() != 0) {
                 holder.tvRetweetCount.setText(tweet.getRetweetCount().toString());

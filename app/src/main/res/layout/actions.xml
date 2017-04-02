@@ -7,7 +7,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:id="@+id/actions"
-    android:weightSum="4"
+    android:weightSum="3"
     android:padding="5dp">
 
     <RelativeLayout
@@ -54,6 +54,7 @@
             android:id="@+id/tvRetweetCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:layout_toRightOf="@+id/ibRetweet"
             tools:text="5"/>
 
@@ -79,6 +80,7 @@
             android:id="@+id/tvFavoriteCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:layout_toRightOf="@+id/ibFavorite"
             tools:text="5"/>
     </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.multicoredump.tutorial.plumtwitter.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetFragmentPagerAdapater;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
+import com.multicoredump.tutorial.plumtwitter.model.User;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
@@ -49,9 +51,14 @@ public abstract class BaseTimelineTabFragment extends Fragment implements TweetF
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-
     protected EndlessRecyclerViewScrollListener scrollListener;
     protected LinearLayoutManager mLayoutManager;
+
+    public interface TwitterCurrentUserProvider {
+        User getCurrentUser();
+    }
+
+    protected TwitterCurrentUserProvider userProvider;
 
     public BaseTimelineTabFragment() {
         // Required empty public constructor
@@ -90,9 +97,7 @@ public abstract class BaseTimelineTabFragment extends Fragment implements TweetF
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 //Handle fetching in a thread with delay to avoid error "API Limit reached" = 429
-                Handler handler = new Handler();
-
-                handler.postDelayed(new Runnable() {
+                new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         updateTimeline(getMaxId());
@@ -116,6 +121,17 @@ public abstract class BaseTimelineTabFragment extends Fragment implements TweetF
 
         updateTimeline(0);
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof TwitterCurrentUserProvider) {
+            userProvider = (TwitterCurrentUserProvider) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement TwitterCurrentUserProvider interface");
+        }
     }
 
     private long getMaxId() {

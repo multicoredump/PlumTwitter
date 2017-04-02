@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 
@@ -18,13 +19,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class FavoritesFragment extends BaseTimelineTabFragment {
+public class LikesFragment extends BaseTimelineTabFragment {
 
     private static final String ARG_USER = "user";
     private User user = null;
 
-    public static FavoritesFragment newInstance(User user) {
-        FavoritesFragment fragment = new FavoritesFragment();
+    public static LikesFragment newInstance(User user) {
+        LikesFragment fragment = new LikesFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_USER, Parcels.wrap(user));
@@ -43,13 +44,13 @@ public class FavoritesFragment extends BaseTimelineTabFragment {
         }
     }
 
-    public FavoritesFragment() {
+    public LikesFragment() {
         super();
     }
 
     @Override
     public int getTabPosition() {
-        return 1;
+        return PlumTwitterApplication.FAV_TAB_POSITION;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class FavoritesFragment extends BaseTimelineTabFragment {
 
     @Override
     public String getTabTitle() {
-        return "FAVORITES";
+        return "LIKES";
     }
 
     @Override

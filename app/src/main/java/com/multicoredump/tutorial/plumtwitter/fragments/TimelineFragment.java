@@ -65,10 +65,6 @@ public class TimelineFragment extends BaseTimelineTabFragment implements OnReply
         });
     }
 
-    public static TimelineFragment newInstance() {
-        return new TimelineFragment();
-    }
-
     public void insertNewTweet(Tweet tweet) {
         tweets.add(0, tweet);
         tweetAdapter.notifyItemInserted(0);
@@ -87,11 +83,12 @@ public class TimelineFragment extends BaseTimelineTabFragment implements OnReply
 
     @Override
     public int getTabPosition() {
-        return 0;
+        return PlumTwitterApplication.HOME_TAB_POSITION;
     }
 
     @Override
     public void onReply(Tweet tweet) {
-
+        ComposeFragment composeFragment = ComposeFragment.newInstance(userProvider.getCurrentUser(), tweet.getUser());
+        composeFragment.show(getActivity().getSupportFragmentManager(), "reply");
     }
 }

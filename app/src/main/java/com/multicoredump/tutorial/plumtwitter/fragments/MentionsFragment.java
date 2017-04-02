@@ -66,7 +66,8 @@ public class MentionsFragment extends BaseTimelineTabFragment implements OnReply
 
     @Override
     public void onReply(Tweet tweet) {
-
+        ComposeFragment composeFragment = ComposeFragment.newInstance(userProvider.getCurrentUser(), tweet.getUser());
+        composeFragment.show(getActivity().getSupportFragmentManager(), "reply");
     }
 
     @Override
@@ -81,6 +82,7 @@ public class MentionsFragment extends BaseTimelineTabFragment implements OnReply
 
     @Override
     public int getTabPosition() {
-        return 1;
+        return PlumTwitterApplication.MENTIONS_TAB_POSITION;
     }
+
 }
