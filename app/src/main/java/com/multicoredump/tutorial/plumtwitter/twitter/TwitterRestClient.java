@@ -119,5 +119,19 @@ public class TwitterRestClient extends OAuthBaseClient {
 
         getClient().get(apiUrl,params,handler);
     }
+
+    public void getFavoriteTweets(long id, String screenName, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("favorites/list.json");
+        RequestParams params = new RequestParams();
+        params.put("count", 15);
+        params.put("screen_name", screenName);
+
+        //only for subsequent requests
+        if (id > 0) {
+            params.put("max_id", id);
+        }
+
+        getClient().get(apiUrl,params,handler);
+    }
 }
 

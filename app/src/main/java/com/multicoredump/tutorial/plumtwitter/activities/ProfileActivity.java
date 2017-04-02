@@ -13,6 +13,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.databinding.ActivityProfileBinding;
+import com.multicoredump.tutorial.plumtwitter.fragments.FavoritesFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.UserTimelineFragment;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 
@@ -75,8 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ProfilePagerAdapter adapter = new ProfilePagerAdapter(getSupportFragmentManager());
         adapter.addFragment(UserTimelineFragment.newInstance(user), "TWEETS");
-//        adapter.addFragment(new PhotosFragment(), "PHOTOS");
-//        adapter.addFragment(new FavoritesFragment(), "FAVORITES");
+        adapter.addFragment(FavoritesFragment.newInstance(user), "FAVORITES");
         viewPager.setAdapter(adapter);
     }
 
