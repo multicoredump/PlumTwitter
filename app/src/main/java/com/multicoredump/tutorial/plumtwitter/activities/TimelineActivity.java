@@ -10,8 +10,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
@@ -121,10 +124,34 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        return true;
+    }
+    //and this to handle actions
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_profile) {
+            // start a new activity to show profile
+//            Intent i = new Intent(TimelineActivity.this, ProfileActivity.class);
+//            i.putExtra("user", user);
+//            startActivity(i);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     JsonHttpResponseHandler postTweetHandler = new JsonHttpResponseHandler() {
         @Override
         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-            Tweet postedTweet = Tweet.fromJson(response);
+            Gson gson = new Gson();
+            Tweet postedTweet = gson.fromJson(response.toString(), Tweet.class);
             if (postedTweet != null) {
 //                tweets.add(0, postedTweet);
 //                tweetAdapter.notifyItemInserted(0);
@@ -153,12 +180,13 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         twitterClient.getCurrentUser(new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                currentUser = User.fromJson(response);
+                Gson gson = new Gson();
+                currentUser = gson.fromJson(response.toString(), User.class);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-                handleRequestError();
+//                handleRequestError();
             }
         });
     }

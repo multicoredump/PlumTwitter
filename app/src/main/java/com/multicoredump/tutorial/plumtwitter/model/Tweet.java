@@ -1,17 +1,14 @@
 package com.multicoredump.tutorial.plumtwitter.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.multicoredump.tutorial.plumtwitter.db.PlumTwitterDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.parceler.Parcel;
-
-import java.util.ArrayList;
 
 /**
  * Created by radhikak on 3/23/17.
@@ -22,34 +19,60 @@ import java.util.ArrayList;
 public class Tweet {
 
     @Column
+    @SerializedName("text")
+    @Expose
      String text;
 
     @Column
     @PrimaryKey
+    @SerializedName("id")
+    @Expose
      long id;
 
     @Column
+    @SerializedName("created_at")
+    @Expose
      String createdAt;
 
-    @Column
     @ForeignKey(saveForeignKeyModel = true)
+    @Column
+    @SerializedName("user")
+    @Expose
      User user;
 
     @Column
+    @SerializedName("retweet_count")
+    @Expose
      Integer retweetCount;
 
     @Column
+    @SerializedName("favorited")
+    @Expose
      Boolean favorited;
 
     @Column
+    @SerializedName("favorite_count")
+    @Expose
      Integer favoriteCount;
 
     @Column
+    @SerializedName("retweeted")
+    @Expose
      boolean retweeted;
 
+
     @Column
-    @ForeignKey(saveForeignKeyModel = true)
-     Media media;
+    @SerializedName("")
+    @Expose
+    private int messageCount;
+
+    @SerializedName("entities")
+    @Expose
+    private Entities entities;
+
+    @SerializedName("extended_entities")
+    @Expose
+    private ExtendedEntities extendedEntities;
 
     public String getText() {
         return text;
@@ -83,51 +106,63 @@ public class Tweet {
         return retweeted;
     }
 
-    public Media getMedia() {
-        return media;
+    public int getMessageCount() {
+        return messageCount;
     }
 
-    public static Tweet fromJson(JSONObject jsonObject){
-        Tweet tweet = new Tweet();
-
-        try {
-            tweet.text = jsonObject.getString("text");
-            tweet.id = jsonObject.getLong("id");
-            tweet.createdAt = jsonObject.getString("created_at");
-            tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
-            tweet.retweetCount = jsonObject.getInt("retweet_count");
-            tweet.favorited = jsonObject.getBoolean("favorited");
-            tweet.favoriteCount = jsonObject.getInt("favorite_count");
-            tweet.retweeted = jsonObject.getBoolean("retweeted");
-
-            JSONObject jsonMediaObj = jsonObject.getJSONObject("entities");
-            if(jsonMediaObj.has("media")) {
-                JSONArray mediaArray = jsonMediaObj.getJSONArray("media");
-                tweet.media = Media.fromJson(mediaArray.getJSONObject(0));
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return tweet;
+    public Entities getEntities() {
+        return entities;
     }
 
-    public static ArrayList<Tweet> fromJSONArray(JSONArray response) {
-        ArrayList<Tweet> tweets = new ArrayList<>();
-
-        for (int i = 0; i< response.length(); i++) {
-            try {
-                JSONObject object = response.getJSONObject(i);
-                Tweet tweet = Tweet.fromJson(object);
-                tweets.add(tweet);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                continue;
-            }
-        }
-        return tweets;
+    public ExtendedEntities getExtendedEntities() {
+        return extendedEntities;
     }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setRetweetCount(Integer retweetCount) {
+        this.retweetCount = retweetCount;
+    }
+
+    public void setFavorited(Boolean favorited) {
+        this.favorited = favorited;
+    }
+
+    public void setFavoriteCount(Integer favoriteCount) {
+        this.favoriteCount = favoriteCount;
+    }
+
+    public void setRetweeted(boolean retweeted) {
+        this.retweeted = retweeted;
+    }
+
+    public void setMessageCount(int messageCount) {
+        this.messageCount = messageCount;
+    }
+
+    public void setEntities(Entities entities) {
+        this.entities = entities;
+    }
+
+    public void setExtendedEntities(ExtendedEntities extendedEntities) {
+        this.extendedEntities = extendedEntities;
+    }
+
+    public Tweet() {}
 
     @Override
     public String toString() {

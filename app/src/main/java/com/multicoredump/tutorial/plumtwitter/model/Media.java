@@ -1,37 +1,38 @@
 package com.multicoredump.tutorial.plumtwitter.model;
 
 
-import com.multicoredump.tutorial.plumtwitter.db.PlumTwitterDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.parceler.Parcel;
 
-@Table(database = PlumTwitterDatabase.class)
+
 @Parcel
 public class Media {
 
-    @PrimaryKey
-    @Column
-    Long id;
+    @SerializedName("id")
+    @Expose
+    private long id;
 
-    @Column
+    @SerializedName("type")
+    @Expose
     String type;
 
-    @Column
+    @SerializedName("media_url_https")
+    @Expose
     String mediaUrlHttps;
 
-    @Column
-    String videoUrlHttps;
+//    @SerializedName("video_info")
+//    @Expose
+//    VideoInfo videoInfo;
 
-    @Column
-    String imageUrl;
 
-    public Long getId() {
+    public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getType() {
@@ -42,30 +43,14 @@ public class Media {
         return mediaUrlHttps;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getVideoUrlHttps() {
-        return videoUrlHttps;
+    public void setMediaUrlHttps(String mediaUrlHttps) {
+        this.mediaUrlHttps = mediaUrlHttps;
     }
 
-    public static Media fromJson(JSONObject jsonObject){
-        Media media = new Media();
 
-        try {
-            media.id = jsonObject.getLong("id");
-            media.type = jsonObject.getString("type");
-            media.imageUrl = jsonObject.getString("media_url");
-            media.mediaUrlHttps = jsonObject.getString("media_url_https");
-
-            //If media type video
-            if(media.type.equals("video"))
-                media.videoUrlHttps = jsonObject.getJSONObject("video_info").
-                                        getJSONArray("variants").getJSONObject(0).getString("url");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return media;
-    }
 }
+

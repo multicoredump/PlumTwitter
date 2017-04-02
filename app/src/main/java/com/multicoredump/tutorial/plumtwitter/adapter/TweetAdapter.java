@@ -13,10 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
-import com.multicoredump.tutorial.plumtwitter.model.Media;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
 import com.multicoredump.tutorial.plumtwitter.utils.DateFormatting;
@@ -148,14 +149,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             }
 
             // Check if multimedia image is available
-            Media media = tweet.getMedia();
-            if (media != null && media.getImageUrl() != null) {
-                holder.ivTweetImage.setVisibility(View.VISIBLE);
+            if(tweet.getEntities()!=null && tweet.getEntities().getMedia()!=null &&
+                    !tweet.getEntities().getMedia().isEmpty()  &&
+                    tweet.getEntities().getMedia().get(0).getMediaUrlHttps()!=null) {
                 Glide.with(context)
-                        .load(media.getImageUrl())
-                        .bitmapTransform(new RoundedCornersTransformation(context, 10, 0))
-                        .crossFade()
+                        .load(tweet.getEntities().getMedia().get(0).getMediaUrlHttps())
+                        .bitmapTransform(new RoundedCornersTransformation(context, 20, 0))
+                        .diskCacheStrategy( DiskCacheStrategy.SOURCE )
                         .into(holder.ivTweetImage);
+                holder.ivTweetImage.setVisibility(View.VISIBLE);
             } else {
                 holder.ivTweetImage.setVisibility(View.GONE);
             }
@@ -168,7 +170,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             // only change retweet count of original tweet
 
-                            Tweet retweet = Tweet.fromJson(response);
+                            Gson gson = new Gson();
+                            Tweet retweet = gson.fromJson(response.toString(), Tweet.class);
                             holder.tvRetweetCount.setText(retweet.getRetweetCount().toString());
                             holder.ibRetweet.setAlpha(1.0f);
 
@@ -192,7 +195,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                 // only change retweet count of original tweet
 
-                                Tweet retweet = Tweet.fromJson(response);
+                                Gson gson = new Gson();
+                                Tweet retweet = gson.fromJson(response.toString(), Tweet.class);
                                 holder.tvFavoriteCount.setText(retweet.getFavoriteCount().toString());
                                 holder.ibFavorite.setAlpha(0.5f);
 
@@ -210,7 +214,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                 // only change retweet count of original tweet
 
-                                Tweet retweet = Tweet.fromJson(response);
+                                Gson gson = new Gson();
+                                Tweet retweet = gson.fromJson(response.toString(), Tweet.class);
                                 holder.tvFavoriteCount.setText(retweet.getFavoriteCount().toString());
                                 holder.ibFavorite.setAlpha(1.0f);
 

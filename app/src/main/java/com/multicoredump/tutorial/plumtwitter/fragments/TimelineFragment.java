@@ -17,18 +17,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
-import com.multicoredump.tutorial.plumtwitter.model.User;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
 import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -56,8 +57,6 @@ public class TimelineFragment extends TimelineTabFragment implements OnReplyActi
 
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
-
-    private User currentUser = null;
 
     public TimelineFragment() {
         // Required empty public constructor
@@ -139,7 +138,18 @@ public class TimelineFragment extends TimelineTabFragment implements OnReplyActi
                 if(maxId == 0) {
                     tweets.clear();
                 }
-                tweets.addAll(Tweet.fromJSONArray(response));
+
+                ArrayList<Tweet> newTweets = new ArrayList<>();
+                Gson gson = new Gson();
+                for(int i = 0; i < response.length(); i++) {
+                    try {
+                        Tweet tweet = gson.fromJson(response.getJSONObject(i).toString(),Tweet.class);
+                        newTweets.add(tweet);
+                    } catch (JSONException e) {
+                    }
+                }
+
+                tweets.addAll(newTweets);
                 tweetAdapter.notifyDataSetChanged();
             }
 
@@ -147,20 +157,6 @@ public class TimelineFragment extends TimelineTabFragment implements OnReplyActi
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
                 super.onFailure(statusCode, headers, throwable, object);
                 swipeRefreshLayout.setRefreshing(false);
-            }
-        });
-    }
-
-    private void getCurrentUser() {
-        twitterClient.getCurrentUser(new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                currentUser = User.fromJson(response);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-//                handleRequestError();
             }
         });
     }

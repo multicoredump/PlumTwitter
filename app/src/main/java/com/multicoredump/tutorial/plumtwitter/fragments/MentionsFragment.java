@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
@@ -28,6 +29,7 @@ import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollLis
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -136,7 +138,17 @@ public class MentionsFragment extends TimelineTabFragment implements OnReplyActi
                 if(maxId == 0) {
                     tweets.clear();
                 }
-                tweets.addAll(Tweet.fromJSONArray(response));
+                ArrayList<Tweet> newTweets = new ArrayList<>();
+                Gson gson = new Gson();
+                for(int i = 0; i < response.length(); i++) {
+                    try {
+                        Tweet tweet = gson.fromJson(response.getJSONObject(i).toString(),Tweet.class);
+                        newTweets.add(tweet);
+                    } catch (JSONException e) {
+                    }
+                }
+
+                tweets.addAll(newTweets);
                 tweetAdapter.notifyDataSetChanged();
             }
 
