@@ -24,7 +24,7 @@ import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBindin
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.MentionsFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.TimelineFragment;
-import com.multicoredump.tutorial.plumtwitter.fragments.TimelineTabFragment;
+import com.multicoredump.tutorial.plumtwitter.fragments.BaseTimelineTabFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
@@ -33,6 +33,7 @@ import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollLis
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
 
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -69,7 +70,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     @BindView(R.id.viewpager)
     ViewPager viewPager;
 
-    ArrayList<TimelineTabFragment> fragments = new ArrayList<>();
+    ArrayList<BaseTimelineTabFragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +86,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setLogo(R.drawable.twitter_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        TimelineTabFragment timelineFragment = TimelineFragment.newInstance();
-        TimelineTabFragment mentionsFragment = new MentionsFragment();
+        BaseTimelineTabFragment timelineFragment = TimelineFragment.newInstance();
+        BaseTimelineTabFragment mentionsFragment = new MentionsFragment();
         fragments.add(timelineFragment.getTabPosition(), timelineFragment);
         fragments.add(mentionsFragment.getTabPosition(), mentionsFragment);
 
@@ -139,9 +140,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         int id = item.getItemId();
         if (id == R.id.action_profile) {
             // start a new activity to show profile
-//            Intent i = new Intent(TimelineActivity.this, ProfileActivity.class);
-//            i.putExtra("user", user);
-//            startActivity(i);
+            Intent i = new Intent(TimelineActivity.this, ProfileActivity.class);
+            i.putExtra("user", Parcels.wrap(currentUser));
+            startActivity(i);
             return true;
         }
         return super.onOptionsItemSelected(item);

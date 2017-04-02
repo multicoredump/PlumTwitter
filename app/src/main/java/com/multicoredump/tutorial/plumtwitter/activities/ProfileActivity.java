@@ -13,6 +13,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.databinding.ActivityProfileBinding;
+import com.multicoredump.tutorial.plumtwitter.fragments.UserTimelineFragment;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 
 import org.parceler.Parcels;
@@ -33,7 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         //Get user info
         Intent intent = getIntent();
-        user = intent.getParcelableExtra("user");
+        user = Parcels.unwrap(intent.getParcelableExtra("user"));
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayUseLogoEnabled(false);
@@ -46,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         //Profile image
         Glide.with(this)
-                .load(user.getProfileImageURL())
+                .load(user.getProfileBiggerImageURL())
                 .into(binding.profileImage);
 
         binding.followerCount.setText(user.getFollowerCount());
@@ -69,30 +70,11 @@ public class ProfileActivity extends AppCompatActivity {
         setupViewPager(binding.viewpager);
         binding.tabs.setupWithViewPager(binding.viewpager);
 
-//        binding.followerCount.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ProfileActivity.this, FollowActivity.class);
-//                intent.putExtra("user", user);
-//                intent.putExtra("list", "follower");
-//                startActivity(intent);
-//            }
-//        });
-//
-//        binding.followingCount.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ProfileActivity.this, FollowActivity.class);
-//                intent.putExtra("user", user);
-//                intent.putExtra("list", "following");
-//                startActivity(intent);
-//            }
-//        });
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ProfilePagerAdapter adapter = new ProfilePagerAdapter(getSupportFragmentManager());
-//        adapter.addFragment(new UserTimelineFragment(), "TWEETS");
+        adapter.addFragment(UserTimelineFragment.newInstance(user), "TWEETS");
 //        adapter.addFragment(new PhotosFragment(), "PHOTOS");
 //        adapter.addFragment(new FavoritesFragment(), "FAVORITES");
         viewPager.setAdapter(adapter);
@@ -108,9 +90,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("user", Parcels.wrap(user));
-            mFragmentList.get(position).setArguments(bundle);
             return mFragmentList.get(position);
         }
 

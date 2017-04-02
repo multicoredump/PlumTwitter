@@ -8,7 +8,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 
-import com.multicoredump.tutorial.plumtwitter.fragments.TimelineTabFragment;
+import com.multicoredump.tutorial.plumtwitter.fragments.BaseTimelineTabFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class TweetFragmentPagerAdapater extends FragmentPagerAdapter {
 
-    private List<TimelineTabFragment> fragments;
+    private List<BaseTimelineTabFragment> fragments;
 
     public interface TweetPagerTab {
         int getTabPosition();
@@ -27,7 +27,7 @@ public class TweetFragmentPagerAdapater extends FragmentPagerAdapter {
         String getTabTitle();
     }
 
-    public TweetFragmentPagerAdapater(FragmentManager fm, ArrayList<TimelineTabFragment> fragments) {
+    public TweetFragmentPagerAdapater(FragmentManager fm, ArrayList<BaseTimelineTabFragment> fragments) {
         super(fm);
         this.fragments = fragments;
     }
@@ -45,7 +45,7 @@ public class TweetFragmentPagerAdapater extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
-        TimelineTabFragment fragment = fragments.get(position);
+        BaseTimelineTabFragment fragment = fragments.get(position);
 
         Drawable image =  fragment.getTabDrawable();
         image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());

@@ -2,44 +2,76 @@ package com.multicoredump.tutorial.plumtwitter.fragments;
 
 
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.multicoredump.tutorial.plumtwitter.R;
-import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
-import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
+import com.multicoredump.tutorial.plumtwitter.model.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class TimelineFragment extends BaseTimelineTabFragment implements OnReplyActionListener {
+public class UserTimelineFragment extends BaseTimelineTabFragment {
 
-    private static final String TAG = TimelineFragment.class.getName();
+    private static final String ARG_USER = "user";
+    private User user = null;
 
-    public TimelineFragment() {
-        // Required empty public constructor
+
+    public static UserTimelineFragment newInstance(User user) {
+        UserTimelineFragment fragment = new UserTimelineFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_USER, Parcels.wrap(user));
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // save current user
+        if (getArguments() != null) {
+            user = Parcels.unwrap(getArguments().getParcelable(ARG_USER));
+        }
+    }
+
+    public UserTimelineFragment() {
         super();
     }
 
-    protected void updateTimeline(final long maxId) {
+    @Override
+    public int getTabPosition() {
+        return 0;
+    }
 
-        twitterClient.getHomeTimeline(maxId, new JsonHttpResponseHandler(){
+    @Override
+    public Drawable getTabDrawable() {
+        return null;
+    }
+
+    @Override
+    public String getTabTitle() {
+        return "TWEETS";
+    }
+
+    @Override
+    protected void updateTimeline(final long id) {
+
+        twitterClient.getUsersTimeline(id, user.getScreenName(), new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
 
                 swipeRefreshLayout.setRefreshing(false);
-                if(maxId == 0) {
+                if(id == 0) {
                     tweets.clear();
                 }
 
@@ -63,29 +95,5 @@ public class TimelineFragment extends BaseTimelineTabFragment implements OnReply
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-    }
-
-    public static TimelineFragment newInstance() {
-        return new TimelineFragment();
-    }
-
-    @Override
-    public Drawable getTabDrawable() {
-        return ContextCompat.getDrawable(PlumTwitterApplication.getContext(), R.drawable.home);
-    }
-
-    @Override
-    public String getTabTitle() {
-        return "Home";
-    }
-
-    @Override
-    public int getTabPosition() {
-        return 0;
-    }
-
-    @Override
-    public void onReply(Tweet tweet) {
-
     }
 }

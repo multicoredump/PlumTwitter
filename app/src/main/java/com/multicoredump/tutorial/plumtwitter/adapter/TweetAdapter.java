@@ -1,6 +1,7 @@
 package com.multicoredump.tutorial.plumtwitter.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
+import com.multicoredump.tutorial.plumtwitter.activities.ProfileActivity;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
@@ -24,6 +26,7 @@ import com.multicoredump.tutorial.plumtwitter.utils.DateFormatting;
 import com.multicoredump.tutorial.plumtwitter.utils.PatternEditableBuilder;
 
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,6 +164,19 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             } else {
                 holder.ivTweetImage.setVisibility(View.GONE);
             }
+
+            holder.ivProfile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // TODO avoid launching for same user
+
+                    Intent intent = new Intent(context, ProfileActivity.class);
+                    intent.putExtra("user", Parcels.wrap(tweet.getUser()));
+                    context.startActivity(intent);
+                }
+            });
+
 
             holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -2,31 +2,15 @@ package com.multicoredump.tutorial.plumtwitter.fragments;
 
 
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
-import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
 import com.multicoredump.tutorial.plumtwitter.application.PlumTwitterApplication;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
-import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
-import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
-import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,101 +18,21 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MentionsFragment extends TimelineTabFragment implements OnReplyActionListener {
+public class MentionsFragment extends BaseTimelineTabFragment implements OnReplyActionListener {
 
     private static final String TAG = MentionsFragment.class.getName();
 
-    private TwitterRestClient twitterClient;
-
-    ArrayList<Tweet> tweets;
-    private TweetAdapter tweetAdapter;
-    EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
-    LinearLayoutManager mLayoutManager;
-
-    @BindView(R.id.rvTweets)
-    RecyclerView rvTweets;
-
-    @BindView(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout swipeRefreshLayout;
-
     public MentionsFragment() {
         // Required empty public constructor
-        tweets = new ArrayList<>();
-        tweetAdapter = new TweetAdapter(tweets, this);
-        twitterClient = PlumTwitterApplication.getTwitterClient();
+        super();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_timeline, container, false);
-        ButterKnife.bind(this, view);
-
-        Log.d(TAG, "Inside onViewCreated");
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        rvTweets.setAdapter(tweetAdapter);
-        rvTweets.setItemAnimator(new DefaultItemAnimator());
-        mLayoutManager = new LinearLayoutManager(getContext());
-        rvTweets.setLayoutManager(mLayoutManager);
-
-        //Recylerview decorater
-        RecyclerView.ItemDecoration itemDecoration =
-                new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        rvTweets.addItemDecoration(itemDecoration);
-
-        //Endless Scroll listener
-        endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(mLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                //Handle fetching in a thread with delay to avoid error "API Limit reached" = 429
-                Handler handler = new Handler();
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateTimeline(getMaxId());
-                    }
-                }, 1000);
-            }
-        };
-        rvTweets.addOnScrollListener(endlessRecyclerViewScrollListener);
-
-        //Swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(!NetworkUtils.isOnline()) {
-//                    handleRequestError();
-                }
-
-                updateTimeline(0);
-            }
-        });
-
-        updateTimeline(0);
-
-    }
-
-    private long getMaxId() {
-        return tweets.get(tweets.size() - 1).getId();
-    }
-
-    private void updateTimeline(final long maxId) {
+    protected void updateTimeline(final long maxId) {
 
         twitterClient.getMentions(maxId, new JsonHttpResponseHandler(){
             @Override
