@@ -5,6 +5,7 @@ import android.content.Context;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.multicoredump.tutorial.plumtwitter.BuildConfig;
 
 import org.scribe.builder.api.Api;
 import org.scribe.builder.api.TwitterApi;
@@ -28,8 +29,8 @@ import org.scribe.builder.api.TwitterApi;
 public class TwitterRestClient extends OAuthBaseClient {
     public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class;
     public static final String REST_URL = "https://api.twitter.com/1.1";
-    public static final String REST_CONSUMER_KEY = "LqYEmliLgy6DkLKkykR6AdYHC";
-    public static final String REST_CONSUMER_SECRET = "nsCzKHwAeN7D1M9UxDBCkQx1cOfSwy4sf5atntWfv62Ajwz9Cq";
+    public static final String REST_CONSUMER_KEY = BuildConfig.consumerKey;
+    public static final String REST_CONSUMER_SECRET = BuildConfig.consumerSecret;
 
     public static final String REST_CALLBACK_URL = "oauth://plumtweets";
 

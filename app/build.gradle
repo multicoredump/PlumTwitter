@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def apikeyPropertiesFile = rootProject.file("apikey.properties");
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -10,6 +14,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // api keys
+        buildConfigField("String", "consumerKey", apikeyProperties['consumerKey'])
+        buildConfigField("String", "consumerSecret", apikeyProperties['consumerSecret'])
     }
 
     dataBinding.enabled = true
