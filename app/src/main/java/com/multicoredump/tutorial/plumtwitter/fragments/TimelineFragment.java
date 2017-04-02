@@ -40,7 +40,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TimelineFragment extends TweetTabFragment implements OnReplyActionListener {
+public class TimelineFragment extends TimelineTabFragment implements OnReplyActionListener {
 
     private static final String TAG = TimelineFragment.class.getName();
 
@@ -167,11 +167,6 @@ public class TimelineFragment extends TweetTabFragment implements OnReplyActionL
 
     public static TimelineFragment newInstance() {
         return new TimelineFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override

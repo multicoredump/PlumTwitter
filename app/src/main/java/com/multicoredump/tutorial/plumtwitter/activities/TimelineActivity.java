@@ -21,7 +21,7 @@ import com.multicoredump.tutorial.plumtwitter.databinding.ActivityTimelineBindin
 import com.multicoredump.tutorial.plumtwitter.fragments.ComposeFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.MentionsFragment;
 import com.multicoredump.tutorial.plumtwitter.fragments.TimelineFragment;
-import com.multicoredump.tutorial.plumtwitter.fragments.TweetTabFragment;
+import com.multicoredump.tutorial.plumtwitter.fragments.TimelineTabFragment;
 import com.multicoredump.tutorial.plumtwitter.model.Tweet;
 import com.multicoredump.tutorial.plumtwitter.model.User;
 import com.multicoredump.tutorial.plumtwitter.twitter.OnReplyActionListener;
@@ -66,7 +66,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     @BindView(R.id.viewpager)
     ViewPager viewPager;
 
-    ArrayList<TweetTabFragment> fragments = new ArrayList<>();
+    ArrayList<TimelineTabFragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +82,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setLogo(R.drawable.twitter_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        TweetTabFragment timelineFragment = TimelineFragment.newInstance();
-        TweetTabFragment mentionsFragment = new MentionsFragment();
+        TimelineTabFragment timelineFragment = TimelineFragment.newInstance();
+        TimelineTabFragment mentionsFragment = new MentionsFragment();
         fragments.add(timelineFragment.getTabPosition(), timelineFragment);
         fragments.add(mentionsFragment.getTabPosition(), mentionsFragment);
 

@@ -92,5 +92,18 @@ public class TwitterRestClient extends OAuthBaseClient {
         getClient().get(apiUrl, params, handler);
     }
 
+    public void getMentions(long id, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", 25);
+
+        //only for subsequent requests
+        if (id > 0) {
+            params.put("max_id", id);
+        }
+
+        getClient().get(apiUrl, params, handler);
+    }
+
 }
 
