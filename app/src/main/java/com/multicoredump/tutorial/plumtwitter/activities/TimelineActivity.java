@@ -132,9 +132,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             Gson gson = new Gson();
             Tweet postedTweet = gson.fromJson(response.toString(), Tweet.class);
             if (postedTweet != null) {
-                if (binding.slidingTabs.getSelectedTabPosition() == timelineFragment.getTabPosition()) {
-                    timelineFragment.insertNewTweet(postedTweet);
-                }
+                timelineFragment.insertNewTweet(postedTweet);
             }
         }
 

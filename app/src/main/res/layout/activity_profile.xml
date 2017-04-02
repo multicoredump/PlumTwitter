@@ -149,7 +149,7 @@
                         android:layout_below="@+id/backdrop"
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_marginStart="100dp"
+                        android:layout_marginStart="150dp"
                         android:autoLink="all"
                         android:linksClickable="true" />
 
