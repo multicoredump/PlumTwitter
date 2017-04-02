@@ -69,6 +69,12 @@ public class TimelineFragment extends BaseTimelineTabFragment implements OnReply
         return new TimelineFragment();
     }
 
+    public void insertNewTweet(Tweet tweet) {
+        tweets.add(0, tweet);
+        tweetAdapter.notifyItemInserted(0);
+        rvTweets.scrollToPosition(0);
+    }
+
     @Override
     public Drawable getTabDrawable() {
         return ContextCompat.getDrawable(PlumTwitterApplication.getContext(), R.drawable.home);

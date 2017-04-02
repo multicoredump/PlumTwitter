@@ -49,6 +49,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
     Snackbar snackbar;
 
+    TimelineFragment timelineFragment;
+    MentionsFragment mentionsFragment;
+
+
     ArrayList<BaseTimelineTabFragment> fragments = new ArrayList<>();
 
     @Override
@@ -65,8 +69,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         getSupportActionBar().setLogo(R.drawable.twitter_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        TimelineFragment timelineFragment = TimelineFragment.newInstance();
-        BaseTimelineTabFragment mentionsFragment = new MentionsFragment();
+        timelineFragment = TimelineFragment.newInstance();
+        mentionsFragment = new MentionsFragment();
         fragments.add(timelineFragment.getTabPosition(), timelineFragment);
         fragments.add(mentionsFragment.getTabPosition(), mentionsFragment);
 
@@ -128,9 +132,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             Gson gson = new Gson();
             Tweet postedTweet = gson.fromJson(response.toString(), Tweet.class);
             if (postedTweet != null) {
-//                tweets.add(0, postedTweet);
-//                tweetAdapter.notifyItemInserted(0);
-//                rvTweets.scrollToPosition(0);
+                if (binding.slidingTabs.getSelectedTabPosition() == timelineFragment.getTabPosition()) {
+                    timelineFragment.insertNewTweet(postedTweet);
+                }
             }
         }
 
