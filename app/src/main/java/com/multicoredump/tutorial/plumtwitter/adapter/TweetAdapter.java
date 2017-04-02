@@ -98,8 +98,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         final Context context = holder.itemView.getContext();
         final Resources resources = context.getResources();
 
-        Log.d(TAG, "Profile Image URL: " + tweet.getUser().getProfileBiggerImageURL());
-
         if (tweet != null) {
             Glide.with(holder.itemView.getContext())
                     .load(tweet.getUser().getProfileBiggerImageURL())

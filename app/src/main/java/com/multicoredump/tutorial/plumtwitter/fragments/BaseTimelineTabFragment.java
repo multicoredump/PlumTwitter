@@ -14,8 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.multicoredump.tutorial.plumtwitter.R;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetAdapter;
 import com.multicoredump.tutorial.plumtwitter.adapter.TweetFragmentPagerAdapater;
@@ -26,15 +24,10 @@ import com.multicoredump.tutorial.plumtwitter.twitter.TwitterRestClient;
 import com.multicoredump.tutorial.plumtwitter.utils.EndlessRecyclerViewScrollListener;
 import com.multicoredump.tutorial.plumtwitter.utils.NetworkUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by radhikak on 3/29/17.
@@ -60,43 +53,11 @@ public abstract class BaseTimelineTabFragment extends Fragment implements TweetF
     protected EndlessRecyclerViewScrollListener scrollListener;
     protected LinearLayoutManager mLayoutManager;
 
-    protected Long maxId;
-
     public BaseTimelineTabFragment() {
         // Required empty public constructor
         tweets = new ArrayList<>();
         tweetAdapter = new TweetAdapter(tweets, this);
     }
-
-    JsonHttpResponseHandler jsonHttpResponseHandler = new JsonHttpResponseHandler(){
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-
-            swipeRefreshLayout.setRefreshing(false);
-            if(maxId == 0) {
-                tweets.clear();
-            }
-
-            ArrayList<Tweet> newTweets = new ArrayList<>();
-            Gson gson = new Gson();
-            for(int i = 0; i < response.length(); i++) {
-                try {
-                    Tweet tweet = gson.fromJson(response.getJSONObject(i).toString(),Tweet.class);
-                    newTweets.add(tweet);
-                } catch (JSONException e) {
-                }
-            }
-
-            tweets.addAll(newTweets);
-            tweetAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-            super.onFailure(statusCode, headers, throwable, object);
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -162,7 +123,6 @@ public abstract class BaseTimelineTabFragment extends Fragment implements TweetF
     }
 
     protected abstract void updateTimeline(long id);
-
 
     @Override
     public void onReply(Tweet tweet) {

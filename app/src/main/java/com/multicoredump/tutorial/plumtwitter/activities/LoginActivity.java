@@ -15,9 +15,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterRestClient
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
-
     }
 
     // OAuth authenticated successfully, launch primary authenticated activity
@@ -43,12 +41,6 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterRestClient
         getClient().connect();
     }
 
-//    public void onSignUp(View view) {
-//        String url = "https://twitter.com/signup";
-//        Intent i = new Intent(Intent.ACTION_VIEW);
-//        i.setData(Uri.parse(url));
-//        startActivity(i);
-//    }
 }
 
 

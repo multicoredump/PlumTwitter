@@ -10,7 +10,6 @@ import android.text.style.ImageSpan;
 
 import com.multicoredump.tutorial.plumtwitter.fragments.BaseTimelineTabFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ import java.util.List;
 
 public class TweetFragmentPagerAdapater extends FragmentPagerAdapter {
 
-    private List<BaseTimelineTabFragment> fragments;
+    protected List<BaseTimelineTabFragment> fragments;
 
     public interface TweetPagerTab {
         int getTabPosition();
@@ -27,7 +26,7 @@ public class TweetFragmentPagerAdapater extends FragmentPagerAdapter {
         String getTabTitle();
     }
 
-    public TweetFragmentPagerAdapater(FragmentManager fm, ArrayList<BaseTimelineTabFragment> fragments) {
+    public TweetFragmentPagerAdapater(FragmentManager fm, List<BaseTimelineTabFragment> fragments) {
         super(fm);
         this.fragments = fragments;
     }

@@ -49,7 +49,7 @@ public class FavoritesFragment extends BaseTimelineTabFragment {
 
     @Override
     public int getTabPosition() {
-        return 0;
+        return 1;
     }
 
     @Override
